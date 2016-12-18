@@ -29,7 +29,7 @@ def secret():
     d = {'secret': text, 'ttl': ttl}
     r = requests.post(SECRET_SHARE, data=d, auth=HTTPBasicAuth(secret_user, secret_pass))
 
-    return Response(r.text)
+    return Response("{}{}".format(SECRET_LINK, r.json().get('secret_key')))
 
 
 if __name__ == '__main__':
