@@ -2,7 +2,7 @@ import os
 import requests
 
 from requests.auth import HTTPBasicAuth
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 
 slack_token = os.environ.get('SLACK_TOKEN')
 ttl = os.environ.get('SECRET_TTL', 259200)  # 3 days
@@ -28,8 +28,18 @@ def secret():
 
     d = {'secret': text, 'ttl': ttl}
     r = requests.post(SECRET_SHARE, data=d, auth=HTTPBasicAuth(secret_user, secret_pass))
+    res = r.json()
 
-    return Response("{}{}".format(SECRET_LINK, r.json().get('secret_key')))
+    rd = {
+        'response_type': 'in_channel',
+        'text': '{}{}'.format(SECRET_LINK, res.get('secret_key')),
+        'attachments': [
+            {
+                'text': "{}'s link will expire in {} seconds.".format(request.values.get('user_name'), res.get('secret_ttl'))
+            }
+        ]
+    }
+    return jsonify(**rd)
 
 
 if __name__ == '__main__':
