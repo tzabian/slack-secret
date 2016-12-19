@@ -31,11 +31,11 @@ def secret():
     res = r.json()
 
     rd = {
-        'response_type': 'in_channel',
+        'response_type': 'ephemeral',
         'text': '{}{}'.format(SECRET_LINK, res.get('secret_key')),
         'attachments': [
             {
-                'text': "{}'s link will expire in {} seconds.".format(request.values.get('user_name'), res.get('secret_ttl'))
+                'text': "The above link will expire in {} seconds.".format(res.get('secret_ttl'))
             }
         ]
     }
